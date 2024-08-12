@@ -1,0 +1,49 @@
+services: # 여러 서비스(컨테이너)를 정의하는 섹션
+  web: # 서비스 이름
+    image: nginx:latest # 사용할 Docker 이미지
+    build: # Dockerfile을 사용하여 이미지를 빌드할 때 사용
+      context: ./nginx # Dockerfile의 경로
+    ports:
+      - "8000:80" # 호스트와 컨테이너의 포트를 매핑
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d # 호스트와 컨테이너의 디렉토리를 매핑
+      - ./code:/home/code
+    # environment:
+    #   - ENV_VAR=value # 환경 변수 설정
+    # command: ["nginx -g"] # 컨테이너가 시작될 때 실행할 명령
+    # depends_on:
+    #   - another_service_name # 다른 서비스가 먼저 시작되도록 설정
+
+  php80: # 서비스 이름
+    image: bitnami/php-fpm:8.0 # php-fpm 이미지 사용
+    volumes:
+      - ./php80/php-fpm.conf:/opt/bitnami/php/etc/php-fpm.d/www.conf # php-fpm 설정 파일을 매핑
+      - ./php80/php.ini:/opt/bitnami/php/etc/php.ini # php.ini 파일을 매핑
+      - ./code:/home/code # 소스코드 위치를 매핑
+  php81: # 서비스 이름
+    image: bitnami/php-fpm:8.1 # php-fpm 이미지 사용
+    volumes:
+      - ./php81/php-fpm.conf:/opt/bitnami/php/etc/php-fpm.d/www.conf # php-fpm 설정 파일을 매핑
+      - ./php81/php.ini:/opt/bitnami/php/etc/php.ini # php.ini 파일을 매핑
+      - ./code:/home/code # 소스코드 위치를 매핑
+  php82: # 서비스 이름
+    image: bitnami/php-fpm:8.2 # php-fpm 이미지 사용
+    volumes:
+      - ./php82/php-fpm.conf:/opt/bitnami/php/etc/php-fpm.d/www.conf # php-fpm 설정 파일을 매핑
+      - ./php82/php.ini:/opt/bitnami/php/etc/php.ini # php.ini 파일을 매핑
+      - ./code:/home/code # 소스코드 위치를 매핑
+  
+  db: # 서비스 이름
+    image: mysql:8.0 # 사용할 Docker 이미지
+    volumes:
+      - ./mysql/data:/var/lib/mysql # 호스트와 컨테이너의 디렉토리를 매핑
+      - ./mysql/initdb:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: dev_test
+      MYSQL_USER: dev_test
+      MYSQL_PASSWORD: dev_test
+      MYSQL_ROOT_PASSWORD: root # 환경 변수 설정
+
+networks: # 사용자 정의 네트워크
+  web_network:
+    driver: bridge
